@@ -7,18 +7,15 @@ function App() {
   const [todos, setTodos] = useState([])
 
   const addTodo = (todo) => {
-    setTodos((prev) => [{id : Date.now(), ...todos}, ...prev])
+    setTodos((prev) => [{id : Date.now(), ...todo}, ...prev])
   }
 
-  const updateTodo = (id, todo) => {
-    setTodos((prev) => prev.map((eachval) => {
-      if (eachval.id === id) {
-        todo
-      } else {
-        eachval
-      }
-    }))
-  }
+  const updateTodo = (id, updatedTodo) => {
+    setTodos((prev) =>
+      prev.map((todo) => (todo.id === id ? { ...todo, ...updatedTodo } : todo))
+    );
+  };
+
 
   const deleteTodo = (id) => {
     setTodos((prev) => prev.filter((todo) => todo.id !== id))
@@ -32,22 +29,45 @@ function App() {
       prevTodo))
   }
     
+// useEffect(() => {
+//   const storedTodos = localStorage.getItem("todos");
+//   console.log("Stored Todos:", storedTodos);
+//   if (storedTodos) {
+//     setTodos(JSON.parse(storedTodos));
+//   }
+  // }, []);
+  
   useEffect(() => {
   try {
-    const storedTodos = JSON.parse(localStorage.getItem("todos"));
-    if (Array.isArray(storedTodos)) {
-      setTodos(storedTodos);
+    const storedTodos = localStorage.getItem("todos");
+    if (storedTodos) {
+      const parsedTodos = JSON.parse(storedTodos);
+      setTodos(parsedTodos);
+    } else {
+      console.log("No todos found in localStorage");
+      setTodos([]); // Default to an empty array if no todos are found
     }
   } catch (error) {
-    console.error("Error loading todos:", error);
+    console.error("Error retrieving or parsing todos from localStorage:", error);
+    setTodos([]); // Set to an empty array if parsing fails
   }
 }, []);
+  
+
+// useEffect(() => {
+//   console.log("Saving Todos:", todos);
+//   localStorage.setItem("todos", JSON.stringify(todos));
+// }, [todos]);
 
   
   useEffect(() => {
-    localStorage.setItem("todos", JSON.stringify)
-  }, [todos])
-  
+  try {
+    localStorage.setItem("todos", JSON.stringify(todos));
+  } catch (error) {
+    console.error("Error saving todos to localStorage:", error);
+  }
+}, [todos]);
+
   return (
     <Todoprovider value={{addTodo, todos, updateTodo, deleteTodo, toggleComplete}}>
       <div className="bg-[#172842] min-h-screen py-8">
