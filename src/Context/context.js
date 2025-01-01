@@ -15,7 +15,11 @@ export const TodoContext = createContext({
 })
 
 export const useTodo = () => {
-    return useContext(TodoContext)
+    const context = useContext(TodoContext)
+    if (!context) {
+        throw new Error("useTodo must be used within a Todoprovider");
+    }
+    return context;
 }
 
 
